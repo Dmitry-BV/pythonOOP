@@ -237,7 +237,7 @@ class EpsilonFloat(CustomFloat):
         self.epsilon = epsilon
 
     def __float__(self):
-        return self.data
+        return float(self.data)
 
     def __repr__(self):
         return f"{float(self.data)}"
