@@ -154,7 +154,7 @@ class RandomFloat(CustomFloat):
             raise TypeError("Not float")
         return float(self) > other
 
-    def __eq__(self, other, epsilon):
+    def __eq__(self, other):
         """
         Сравнение x == y (equal)
         :param other:
@@ -217,7 +217,7 @@ class RandomFloat(CustomFloat):
         Получение текстового описания объекта (reputation)
         :return: str
         """
-        return f"{float(RandomFloat)}"
+        return f"{float(self)}"
 
     def __iadd__(self, other):
         if isinstance(other, RandomFloat):
@@ -229,12 +229,36 @@ class RandomFloat(CustomFloat):
 
 class EpsilonFloat(CustomFloat):
     def __init__(self, /, data, *, epsilon=1e-5):
-        if isinstance(data, float) or not isinstance (epsilon, float):
+        if not isinstance(data, float) or not isinstance(epsilon, (int, float)):
             raise TypeError("Wrong Type")
+        if epsilon < 0:
+            raise ValueError("Negative Value for Epsilon!")
         self.data = data
+        self.epsilon = epsilon
 
     def __float__(self):
-        ...
+        return self.data
+
+    def __repr__(self):
+        return f"{float(self.data)}"
 
     def __eq__(self, other):
-        ...
+        if not isinstance(other, (int, float, EpsilonFloat)):
+            raise TypeError("WrongType!")
+        if float(other) - self.epsilon < self.data < float(other) + self.epsilon:
+            return True
+        else:
+            return False
+
+rf = RandomFloat(10.)
+rf2 = RandomFloat(10.)
+print(rf)
+print(rf2)
+print(rf == 10)
+print(rf == rf2)
+ef = EpsilonFloat(10.3, epsilon=2)
+ef2 = EpsilonFloat(10.4)
+print(ef)
+print(ef2)
+print(ef == 10)
+print(ef == ef2)

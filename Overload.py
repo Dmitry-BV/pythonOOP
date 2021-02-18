@@ -1,6 +1,5 @@
 import math
 from random import gauss
-from numpy import mean
 
 class Class:
     def __init__(self, var):
@@ -156,7 +155,7 @@ class RandomFloat:
             raise TypeError("Not float")
         return float(self) > other
 
-    def __eq__(self, other, epsilon):
+    def __eq__(self, other):
         """
         Сравнение x == y (equal)
         :param other:
