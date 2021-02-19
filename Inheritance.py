@@ -221,15 +221,22 @@ class RandomFloat(CustomFloat):
 
     def __iadd__(self, other):
         if isinstance(other, RandomFloat):
-            return float(self.mu + other.mu)
+            return float(RandomFloat(self.mu + other.mu))
         if not isinstance(other, (int, float)):
             raise TypeError
-        return float(self.mu + other)
+        return float(RandomFloat(self.mu + other))
+
+    def __isub__(self, other):
+        if isinstance(other, RandomFloat):
+            return float(RandomFloat(self.mu - other.mu))
+        if not isinstance(other, (int, float)):
+            raise TypeError
+        return float(RandomFloat(self.mu - other))
 
 
 class EpsilonFloat(CustomFloat):
     def __init__(self, /, data, *, epsilon=1e-5):
-        if not isinstance(data, float) or not isinstance(epsilon, (int, float)):
+        if not isinstance(data, (float, RandomFloat)) or not isinstance(epsilon, (int, float)):
             raise TypeError("Wrong Type")
         if epsilon < 0:
             raise ValueError("Negative Value for Epsilon!")
@@ -237,7 +244,7 @@ class EpsilonFloat(CustomFloat):
         self.epsilon = epsilon
 
     def __float__(self):
-        return float(self.data)
+        return self.data
 
     def __repr__(self):
         return f"{float(self.data)}"
@@ -250,15 +257,45 @@ class EpsilonFloat(CustomFloat):
         else:
             return False
 
+    def __iadd__(self, other):
+        if isinstance(other, EpsilonFloat):
+            return float(EpsilonFloat(self.data + other.data))
+        if not isinstance(other, (int, float)):
+            raise TypeError
+        return float(EpsilonFloat(self.data + other))
+
+    def __isub__(self, other):
+        if isinstance(other, EpsilonFloat):
+            return float(EpsilonFloat(self.data - other.data))
+        if not isinstance(other, (int, float)):
+            raise TypeError
+        return float(EpsilonFloat(self.data - other))
+
+    def __imul__(self, other):
+        if isinstance(other, EpsilonFloat):
+            return float(EpsilonFloat(self.data * other.data))
+        if not isinstance(other, (int, float)):
+            raise TypeError
+        return float(EpsilonFloat(self.data * other))
+
+
 rf = RandomFloat(10.)
 rf2 = RandomFloat(10.)
-print(rf)
-print(rf2)
-print(rf == 10)
-print(rf == rf2)
-ef = EpsilonFloat(10.3, epsilon=2)
-ef2 = EpsilonFloat(10.4)
-print(ef)
-print(ef2)
-print(ef == 10)
-print(ef == ef2)
+print("RandomFloat 1:", rf)
+print("RandomFloat 2:", rf2)
+print("RF1 == 10:", rf == 10)
+print("RF1 == RF2:", rf == rf2)
+rf -= rf2
+print("RF1 -= RF2", rf)
+
+ef = EpsilonFloat(10.0, epsilon=2)
+ef2 = EpsilonFloat(15.0)
+print("EpsilonFloat 1:", ef)
+print("EpsilonFloat 2:", ef2)
+print("EF1 == 10, eps.=2:", ef == 10)
+print("EF1 == EF2, eps.=2:", ef == ef2)
+print("EF2 == EF2", ef2 == ef2)
+ef += ef2
+print("EF1 += EF2", ef)
+ef *= 10
+print("EF1 *= 10:", ef)
