@@ -3,14 +3,23 @@ from random import gauss
 Example of inheritance
 """
 
+
 class CustomFloat:
+    def __init__(self, var):
+        if not isinstance(var, float):
+            raise TypeError("variable for CustomFloat is not Float type")
+        self.var = var
+
+    def __float__(self):
+        return self.var
+
     def __int__(self):
         return int(float(self))
 
     def __add__(self, other):
         """
         Суммирование
-        :param other:
+        :param other: float / int / CustomFloat
         :return: float
         """
         if isinstance(other, CustomFloat):
@@ -21,6 +30,163 @@ class CustomFloat:
 
     def __radd__(self, other):
         return self + other
+
+    def __sub__(self, other):
+        """
+        Вычитание
+        :param other: float / int / CustomFloat
+        :return: float
+        """
+        if isinstance(other, CustomFloat):
+            other = float(other)
+        elif not isinstance(other, (float, int)):
+            raise TypeError("Not float")
+        return float(self) - other
+
+    def __rsub__(self, other):
+        return self - other
+
+    def __mul__(self, other):
+        """
+        Умножение
+        :param other: float / int / CustomFloat
+        :return: float
+        """
+        if isinstance(other, CustomFloat):
+            other = float(other)
+        elif not isinstance(other, (float, int)):
+            raise TypeError("Not float")
+        return float(self) * other
+
+    def __rmul__(self, other):
+        return self * other
+
+    def __truediv__(self, other):
+        """
+        Деление x / y
+        :param other: float / int / CustomFloat
+        :return: float
+        """
+        if isinstance(other, CustomFloat):
+            other = float(other)
+        elif not isinstance(other, (float, int)):
+            raise TypeError("Not float")
+        return float(self) / other
+
+    def __rtruediv__(self, other):
+        return other / float(self)
+
+    def __floordiv__(self, other):
+        """
+        Целочисленное деление x // y
+        :param other: float / int / CustomFloat
+        :return: float
+        """
+        if isinstance(other, CustomFloat):
+            other = float(other)
+        elif not isinstance(other, (float, int)):
+            raise TypeError("Not float")
+        return float(self) // other
+
+    def __rfloordiv__(self, other):
+        return other // float(self)
+
+    def __mod__(self, other):
+        """
+        Остаток от деления x % y
+        :param other: float / int / CustomFloat
+        :return: float
+        """
+        if isinstance(other, CustomFloat):
+            other = float(other)
+        elif not isinstance(other, (float, int)):
+            raise TypeError("Not float")
+        return float(self) % other
+
+    def __rmod__(self, other):
+        return other % float(self)
+
+    def __lt__(self, other):
+        """
+        Сравнение x < y (less than)
+        :param other: float / int / CustomFloat
+        :return: Bool
+        """
+        if isinstance(other, CustomFloat):
+            other = float(other)
+        elif not isinstance(other, (float, int)):
+            raise TypeError("Not float")
+        return float(self) < other
+
+    def __gt__(self, other):
+        """
+        Сравнение x > y (greater than)
+        :param other: float / int / CustomFloat
+        :return: Bool
+        """
+        if isinstance(other, CustomFloat):
+            other = float(other)
+        elif not isinstance(other, (float, int)):
+            raise TypeError("Not float")
+        return float(self) > other
+
+    def __eq__(self, other):
+        """
+        Сравнение x == y (equal)
+        :param other: float / int / CustomFloat
+        :return: Bool
+        """
+        if isinstance(other, CustomFloat):
+            other = float(other)
+        elif not isinstance(other, (float, int)):
+            raise TypeError("Not float")
+        return float(self) == other
+
+    def __neg__(self):
+        """
+        Унарный минус (negative)
+        :return: float
+        """
+        return -float(self)
+
+    def __pos__(self):
+        """
+        Унарный плюс (positive)
+        :return: float
+        """
+        return +float(self)
+
+    def __abs__(self):
+        """
+        Получение абсолютного значения (abs)
+        :return: float
+        """
+        return abs(float(self))
+
+    def __round__(self, n=None):
+        """
+        Округление
+        :param n: int
+        :return: int
+        """
+        if not isinstance(n, int):
+            raise TypeError("Not Integer")
+        return round(float(self), n)
+
+    def __pow__(self, power):
+        """
+        Power
+        :param power: float / int / CustomFloat
+        :return: float
+        """
+        if isinstance(power, CustomFloat):
+            power = float(power)
+        elif not isinstance(power, (float, int)):
+            raise TypeError("Not float")
+        return float(self) ** power
+
+    def __rpow__(self, power):
+        return power ** float(self)
 
 
 class RandomFloat(CustomFloat):
@@ -299,3 +465,12 @@ ef += ef2
 print("EF1 += EF2", ef)
 ef *= 10
 print("EF1 *= 10:", ef)
+print("EF + 150:", ef + 150)
+cf = CustomFloat(20.)
+print("CustomFloat:", float(cf))
+print(f"EF + CF: {ef + cf}, CF + EF: {cf + ef}")
+print("CF - 30:", cf - 30)
+print("CF * 30:", cf * 30)
+print("CF / 30:", cf / 30)
+print("CF % 30:", cf % 30)
+print("CF > EF:", cf > ef)
