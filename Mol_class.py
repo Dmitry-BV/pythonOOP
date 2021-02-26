@@ -24,6 +24,9 @@ class Molecule:
                 raise TypeError
             if bond not in (1, 2, 3):
                 raise ValueError
+            if bond not in self._atoms_table[self._atoms[map_].upper()] or \
+                    bond not in self._atoms_table[self._atoms[map_].upper()]:
+                raise TypeError("Bad valence!")
         if if_exists is not None:  # Проверка номера при удалении атома или связи между двумя атомами
             if if_exists not in self._atoms:
                 raise ValueError("Atom with this number is not exists!")
@@ -55,7 +58,8 @@ class Molecule:
         return map_
 
     def add_bond(self, map1, map2, bond):
-        self.validation(bond=bond)
+        self.validation(map_=map1, bond=bond)
+        self.validation(map_=map2, bond=bond)
 
         # есть ли в селф.атом, что мап1 не равно мап2, что уже есть связь м\у этими атомами, что одноатомн мол-ла
         neigh1 = self._bonds[map1]
@@ -65,10 +69,6 @@ class Molecule:
             raise KeyError
         if map1 in neigh2:  # если связь уже существует, raise Error
             raise KeyError
-
-        if bond not in self._atoms_table[self._atoms[map1].upper()] or \
-                bond not in self._atoms_table[self._atoms[map2].upper()]:
-            raise TypeError("Bad valence!")
 
         neigh1[map2] = bond
         neigh2[map1] = bond
@@ -87,6 +87,7 @@ class Molecule:
 
     def show_bonds(self):
         return self._bonds.copy()
+
 
 ol = Molecule()
 ol.add_atom("C")
