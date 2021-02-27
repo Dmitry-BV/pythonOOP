@@ -5,6 +5,12 @@ class Molecule:
         self._atoms_table = {"H": [1], "HE": [1], "LI": [1], "BE": [1, 2], "B": [1], "C": [1, 2, 3], "N": [1, 2, 3],
                              "O": [1, 2], "CL": [1], "NA": [1], "K": [1], "F": [1], "BR": [1], "FE": [2, 3]}
 
+    # Генераторы содержат и iter и next
+    # Iterable содержат только iter
+
+    def __iter__(self):
+        return iter(self._atoms)
+
     def validation(self, *, atom=None, map_=None, bond=None, if_exists=None):
         """
         Проверка корректности ввода
@@ -55,7 +61,6 @@ class Molecule:
         for value in self._bonds.values():
             if map_ in value:
                 del value[map_]
-        return map_
 
     def add_bond(self, map1, map2, bond):
         self.validation(map_=map1, bond=bond)
@@ -82,11 +87,52 @@ class Molecule:
             if map2 in value:
                 del value[map2]
 
+    def get_atom(self, map_):
+        return self._atoms[map_]
+
+    def get_atoms(self):
+        g = iter(self._atoms)
+        atoms = set()
+        for i in g:
+            atoms.add(self._atoms[i])
+        return atoms
+
+    def get_bond_type(self, map1, map2):
+        return self._bonds[map1][map2]
+
+    def get_bonds(self):
+        return self._bonds.copy()
+
     def show_atoms(self):
         return self._atoms.copy()
 
     def show_bonds(self):
         return self._bonds.copy()
+
+
+# Написать класс-генератор с тремя методами
+class BondIterator:
+    def __init__(self, bonds):
+        if not isinstance(bonds, dict):
+            raise TypeError("Not a dict!")
+        self.bonds = bonds
+        self.bonds_list = list()
+        self.state = -1
+        for atom1 in self.bonds:
+            for atom2 in self.bonds[atom1]:
+                if {atom1, self.bonds[atom1][atom2]} not in self.bonds_list:
+                    self.bonds_list.append({atom1, self.bonds[atom1][atom2]})
+
+    def __iter__(self):
+        return iter(self.bonds_list)
+
+    def __next__(self):
+        self.state += 1
+        if self.state < len(self.bonds_list):
+            return self.bonds_list[self.state]
+        else:
+            raise StopIteration
+
 
 
 ol = Molecule()
@@ -114,3 +160,47 @@ print("Удаление атома под номером 2:")
 ol.del_atom(2)
 print(ol.show_bonds())
 print(ol.show_atoms())
+print("Вывод атома и всех возможных типов атомов")
+print(ol.get_atom(3))
+print(ol.get_atoms())
+print("Вывод типа связи между двумя атомами")
+print(ol.get_bond_type(3, 5))
+
+a = {1: {2: 1}, 2: {1: 1, 3: 1}, 3: {2: 1, 4: 1, 5: 2}, 4: {3: 1, 6: 1}, 5: {3: 2, 6: 2}, 6: {4: 1, 5: 2}}
+bonds = BondIterator(ol.show_bonds())
+print("Метод 'next':")
+for j in range(6):
+    print(next(bonds))
+
+print("Итерация по связям, присутствующим в молекуле:\n"
+      "(формат: {atom1, atom2})")
+for i in bonds:
+    print(i)
+
+
+
+
+
+
+
+
+"""
+# Упрощенный вариант для итерации
+class IterBonds:
+    def __init__(self, bonds):
+        if not isinstance(bonds, dict):
+            raise TypeError("Not a dict!")
+        self.bonds = bonds
+        self.bonds_list = [elem for elem in self.bonds]
+        self.state = 0
+
+    def __iter__(self):
+        return iter(self.bonds)
+
+    def __next__(self):
+        if self.state < len(self.bonds_list) + 1:
+            self.state += 1
+            return self.bonds[self.bonds_list[self.state - 1]]
+        else:
+            raise StopIteration
+"""
